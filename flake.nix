@@ -8,38 +8,33 @@
   };
 
   outputs = { self, haumea, nixpkgs }: {
-    checks = haumea.lib.loadEvalTests {
-      src = ./tests;
-      inputs = {
-        inherit (nixpkgs) lib;
-        foo = self.lib;
+    product = {
+      default = haumea.lib.load {
+        src = ./examples/default;
+        inputs = {
+          inherit (nixpkgs) lib;
+          bar = "bar";
+        };
       };
-    };
-    lib = haumea.lib.load {
-      src = ./src;
-      inputs = {
-        inherit (nixpkgs) lib;
-        bar = "bar";
+      path = haumea.lib.load {
+        src = ./examples/default;
+        loader = haumea.lib.loaders.path;
       };
-    };
-    tree = haumea.lib.load {
-      src = ./src;
-      loader = haumea.lib.loaders.path;
-    };
-    libScoped = haumea.lib.load { 
-      src = ./srcScoped;
-      loader = haumea.lib.loaders.scoped;
-      inputs = {
-        inherit (nixpkgs) lib;
-      }; 
-    };
-    libHoistAttrs = haumea.lib.load {
-      src = ./srcHoistAttrs;
-      transformer = haumea.lib.transformers.hoistAttrs "foo" "hitchhiker";
-    };
-    libHoistLists = haumea.lib.load {
-      src = ./srcHoistLists;
-      transformer = haumea.lib.transformers.hoistLists "foo" "hitchiker.question";
+      scoped = haumea.lib.load {
+        src = ./examples/scoped;
+        loader = haumea.lib.loaders.scoped;
+        inputs = {
+          inherit (nixpkgs) lib;
+        };
+      };
+      hoistAttrs = haumea.lib.load {
+        src = ./examples/hoistAttrs;
+        transformer = haumea.lib.transformers.hoistAttrs "foo" "hitchhiker";
+      };
+      hoistLists = haumea.lib.load {
+        src = ./examples/hoistLists;
+        transformer = haumea.lib.transformers.hoistLists "foo" "hitchiker.question";
+      };
     };
   };
 }
